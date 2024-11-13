@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compress image (ML_PCA)</title>
+    <style>
+        /* Dark Theme Styles */
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        /* Form Styling */
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            position: relative;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        h1 {
+            color: #e53935;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="radio"] {
+            margin: 0.5rem;
+        }
+
+        .upload-btn {
+            display: block;
+            margin: 1.5rem 0;
+            background-color: #e53935;
+            color: white;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .upload-btn:hover {
+            background-color: #c62828;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Download button styling */
+        .download-btn {
+            display: none; /* Hidden by default */
+            margin-top: 1rem;
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+        }
+
+        .download-btn:hover {
+            background-color: #388E3C;
+        }
+    </style>
+
+    <script>
+        function handleFormSubmit(event) {
+            event.preventDefault(); // Prevent page reload
+            const formData = new FormData(event.target);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Upload failed");
+                }
+                return response.text(); // Process server response
+            })
+            .then(() => {
+                // Show the download button after successful upload
+                document.getElementById('download-btn').style.display = 'block';
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+        }
+    </script>
+</head>
+<body>
+
+    <div class="form-container">
+        <h1>Select Your Confidence Level</h1>
+        <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data" onsubmit="handleFormSubmit(event)">
+            <label>Select Confidence Level:</label>
+            <input type="radio" name="confidence" value="0.8" required> 80%
+            <input type="radio" name="confidence" value="0.9"> 90%
+            <input type="radio" name="confidence" value="0.95"> 95%
+            <input type="radio" name="confidence" value="0.99"> 99%
+
+            <label>Upload an Image:</label>
+            <input type="file" name="image" accept="image/*" class="upload-btn" required>
+
+            <button type="submit" class="upload-btn">Submit</button>
+        </form>
+
+        <!-- Download button, hidden initially, displayed after successful upload -->
+        <a id="download-btn" href="/download_compressed" class="download-btn">Download Compressed Image</a>
+    </div>
+
+</body>
+</html>
